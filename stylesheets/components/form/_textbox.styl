@@ -43,6 +43,14 @@
     padding-left: $sizing-300
     padding-right: $sizing-300
 
+    &--sr
+      border-width: $border-150
+      border-color: $error-border-color
+
+    &--focused
+      box-shadow: 0 0 0 3px $focus-indicator-color
+      border-color: $focus-indicator-color
+
     &--sm
       field-height-sm = "calc(%srem + %s * 2)" % ($line-height-400 $border-200)
 
@@ -92,10 +100,13 @@
 
     &:focus
       box-shadow: 0 0 0 3px $focus-indicator-color
+      border-color: $focus-indicator-color
 
     &--combo
       border-right: 0
       float: left
+    :focus
+      outline: none;
 
   &-l
     color: $charles-blue
