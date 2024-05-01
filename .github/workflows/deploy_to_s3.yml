@@ -1,0 +1,80 @@
+name: "Deploy Patterns to Amazon S3"
+on:
+  workflow_dispatch:
+  push:
+    branches:   # we can add branches to this list which will deploy code to Acquia GitLab as we push code to those branches.
+#      - develop
+#      - production
+      - dummy
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DOIT_WEBHOOK_URL }}    # for slack
+  NODE_VERSION: 14
+  TZ: "America/New_York"
+
+jobs:
+  Deploy:
+    # installed software: https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2004-Readme.md
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      # checkout the cob repository that has been pushed to.
+      - name: Set Variables
+        run: |
+          if [[ "{{ branch }}" == "develop" ]]; then
+            echo "BUCKET_NAME=patterns-stg.boston.gov" >> "${GITHUB_ENV}"
+          elif [[ "{{ branch }}" == "production" ]]; then
+            echo "BUCKET_NAME=patterns.boston.gov" >> "${GITHUB_ENV}"
+          else
+            echo "BUCKET_NAME=patterns-uat.boston.gov" >> "${GITHUB_ENV}"
+          fi
+
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Downgrade node 14
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Build the public folder
+        run: |
+          npm install
+          npm run build
+
+      - name: Printout vars
+        if: ${{ vars.DEPLOY_DEBUG == 1 }}
+        run: |
+          du 
+
+      - name: Run Percy Tests
+        run: |
+          gem install faraday -v 1.8.0
+          percy snapshot public --snapshots_regex="(components\/preview.).*\.html$" --enable_javascript --trace --widths "375,1280"
+
+      - name: Run Jest Tests
+        run: |
+          npm run jest.ci
+
+      - name: Upload to Amazon
+        uses: jakejarvis/s3-sync-action@0.5.1
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ env.BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'us-east-2'
+          SOURCE_DIR: 'public'
+
+      - name: Invalidate AWS CloudFront
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          PATHS: "/*"
+          AWS_REGION: "us-east-1"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
