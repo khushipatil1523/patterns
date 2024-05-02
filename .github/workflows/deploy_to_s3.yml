@@ -31,9 +31,11 @@ jobs:
             echo "BUCKET_NAME=patterns-uat.boston.gov" >> "${GITHUB_ENV}"
           fi
           if [[ ${{ vars.S3_DRY_RUN }} == 1 ]];then
-            echo "S3_DEST_DIR='/'" >> "${GITHUB_ENV}"
-          else
             echo "S3_DEST_DIR='/DRY_RUN/'" >> "${GITHUB_ENV}"
+            echo "SOURCE_DIR='public/legacy'" >> "${GITHUB_ENV}"
+          else
+            echo "S3_DEST_DIR='/'" >> "${GITHUB_ENV}"
+            echo "SOURCE_DIR=public" >> "${GITHUB_ENV}"
           fi
 
       - name: Post to Slack
@@ -60,7 +62,7 @@ jobs:
       - name: Printout vars
         if: ${{ vars.DEPLOY_DEBUG == 1 }}
         run: |
-          du ./components
+          du ./public
 
       - name: Run Percy Tests
         if: ${{ vars.RUN_PERCY == 1 }}
@@ -83,7 +85,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-east-2'
-          SOURCE_DIR: 'public'
+          SOURCE_DIR: ${{ env.SOURCE_DIR }}
           DEST_DIR: ${{ env.S3_DEST_DIR }}
 
       - name: Invalidate AWS CloudFront
