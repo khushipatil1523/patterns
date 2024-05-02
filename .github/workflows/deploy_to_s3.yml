@@ -46,7 +46,7 @@ jobs:
           cache: 'npm'
 
       - name: Build the public folder
-        id: Build patterns and CDN assets
+        id: Build-Patterns-And-CDN-Assets
         run: |
           npm install
           npm run build
@@ -68,7 +68,7 @@ jobs:
           npm run jest.ci
 
       - name: Upload to Amazon
-        id: Deploy to Amazon
+        id: Deploy-To-Amazon
         uses: jakejarvis/s3-sync-action@0.5.1
         with:
           args: --acl public-read --follow-symlinks --delete
@@ -81,7 +81,7 @@ jobs:
           DEST_DIR: ${{ env.S3_DEST_DIR }}
 
       - name: Invalidate AWS CloudFront
-        id: Invalidate Cache
+        id: Invalidate-Cache
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
