@@ -1,3 +1,19 @@
+# @file: deploy_to_s3.yml
+# This Action builds a deploy artifact (which in this case is a fully populated config, vendor and docroot folder for a
+# Dupal website) and copies the built folders+files to an s3 bucket.
+#
+# Attached resources:
+# - GitHub SECRETS:
+#     -> global: AWS_ACCESS_KEY -> AWS Authentication using a SERVICE ACCOUNT
+#     -> global: AWS_SECRET_ACCESS_KEY -> WeAWS Authentication using a SERVICE ACCOUNT
+#     -> global: SLACK_DOIT_WEBHOOK_URL -> Webhook URL for posting messages to slack
+#     -> local: CLOUDFRONT_DISTRIBUTION_ID -> The cloudfront distributionIDF so we can invalidate AWS cache for patterns
+# - GitHub VARIABLES:
+#     -> global: SLACK_MONITORING_CHANNEL -> Channel to post devops messages into
+#     -> local: S3_DRY_RUN -> Copies a single file into the s3 bucket DRY_RUN folder (for testing)
+#     -> local: DEPLOY_DEBUG -> Debug mode, generally prints more output for debugging
+#     -> local: RUN_PERCY -> Launch Percy tests as part of action
+#     -> local: RUN_JEST -> Launch Jest tests as part of action
 name: "Deploy Patterns to Amazon S3"
 on:
   workflow_dispatch:
