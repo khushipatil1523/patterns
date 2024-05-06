@@ -52,7 +52,7 @@
       border-color: $focus-indicator-color
 
     &--sm
-      field-height-sm = "calc(%srem + %s * 2)" % ($line-height-400 $border-200)
+      field-height-sm = "calc(%srem + %s * 1)" % ($line-height-400 $border-200)
 
       padding-left: $sizing-200
       padding-right: $sizing-200
@@ -74,7 +74,7 @@
     textarea&
       &.txt-f--combo
         // Need to leave space for a .sel-f--sq element, and its borders
-        width: "calc(100% - %s - %s * 2)" % ($select-arrow-box-width $border-200)
+        width: "calc(100% - %s - %s * 1)" % ($select-arrow-box-width $border-200)
 
     input[type=email]&--auto,
     input[type=tel]&--auto,
