@@ -19,9 +19,9 @@ on:
   workflow_dispatch:
   push:
     branches:   # we can add branches to this list which will deploy code to Acquia GitLab as we push code to those branches.
-#      - develop
-#      - production
-      - dummy
+     - develop
+     - production
+      # - dummy
 env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DOIT_WEBHOOK_URL }}    # for slack
   NODE_VERSION: 14
