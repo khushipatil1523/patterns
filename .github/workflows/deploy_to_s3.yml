@@ -41,13 +41,13 @@ jobs:
         run: |
           if [[ "${{ github.ref_name }}" == "develop" ]]; then
             echo "BUCKET_NAME=patterns-stg.boston.gov" >> "${GITHUB_ENV}"
-            echo "CLOUDFRONT_ID=${{ secret.STG_CLOUDFRONT_DISTRIBUTION_ID }}" >> "${GITHUB_ENV}"
+            echo "CLOUDFRONT_ID=${{ secrets.STG_CLOUDFRONT_DISTRIBUTION_ID }}" >> "${GITHUB_ENV}"
           elif [[ "${{ github.ref_name }}" == "production" ]]; then
             echo "BUCKET_NAME=patterns.boston.gov" >> "${GITHUB_ENV}"
-            echo "CLOUDFRONT_ID=${{ secret.CLOUDFRONT_DISTRIBUTION_ID }}" >> "${GITHUB_ENV}"
+            echo "CLOUDFRONT_ID=${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" >> "${GITHUB_ENV}"
           else
             echo "BUCKET_NAME=patterns-uat.boston.gov" >> "${GITHUB_ENV}"
-            echo "CLOUDFRONT_ID=${{ secret.UAT_CLOUDFRONT_DISTRIBUTION_ID }}" >> "${GITHUB_ENV}"
+            echo "CLOUDFRONT_ID=${{ secrets.UAT_CLOUDFRONT_DISTRIBUTION_ID }}" >> "${GITHUB_ENV}"
           fi
           if [[ ${{ vars.S3_DRY_RUN }} == 1 ]];then
             echo "S3_DEST_DIR='DRY_RUN/'" >> "${GITHUB_ENV}"
